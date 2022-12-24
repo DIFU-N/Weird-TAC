@@ -155,33 +155,45 @@ function App() {
   //   console.log(rowV.length);
   // }
 
-  const getFirstWithTwoInARow = function (agent) {
+  const getFirstWithTwoInARow = function () {
     if (!oPlaying && oPlaying ) {
       console.error("Function getFirstWithTwoInARow accepts only player or computer as argument.");
       return undefined;
     }
-    console.log(agent);
-    let sum = agent * 2, 
-        freeCells = getFreeCells(borad);
-    console.log(sum);
+    // console.log(agent);
+    // let sum = agent * 2, 
+      let freeCells = getFreeCells(borad);
+    // console.log(sum);
     for (let i = 0; i < freeCells.length; i++) {
       for (let j = 0; j < 3; j++) {
         let rowV = getRowValues(j),
             rowI = getRowIndices(j),
             colV = getColumnValues(j),
             colI = getColumnIndices(j);
-
         if ((((rowV[0] === rowV[1]) || (rowV[0] === rowV[2]) || (rowV[1] === rowV[2])) && ((rowV[0] && rowV[1]) || (rowV[0] && rowV[2]) || (rowV[1] && rowV[2])) && isInArray(freeCells[i], rowI))) {
-          return freeCells[i];
+          if (rowV[0] === "O" || rowV[1] === "O" || rowV[2] === "O")  {
+            return freeCells[i];
+          }  else if (rowV[0] === "X" || rowV[1] === "X" || rowV[2] === "X") {
+            return freeCells[i];
+          }
+          // return freeCells[i];
         } else if ((((colV[0] === colV[1]) || (colV[0] === colV[2]) || (colV[1] === colV[2])) && ((colV[0] && colV[1]) || (colV[0] && colV[2]) || (colV[1] && colV[2])) && isInArray(freeCells[i], colI))) {
-          return freeCells[i];    
+          if (colV[0] === "O" || colV[1] === "O" || colV[2] === "O")  {
+            return freeCells[i];
+          }  else if(colV[0] === "X" || colV[1] === "X" || colV[2] === "X") {
+            return freeCells[i];
+          } 
         }
       };
       for (let j = 0; j < 2; j++) {
         let diagV = getDiagValues(j),
             diagI = getDiagIndices(j);
         if ((((diagV[0] && diagV[1]) || (diagV[0] && diagV[2]) || (diagV[1] && diagV[2])) && ((diagV[0] === diagV[1]) || (diagV[0] === diagV[2]) || (diagV[1] === diagV[2])) && isInArray(freeCells[i], diagI))) {
-          return freeCells[i];  
+          if (diagV[0] === "O" || diagV[1] === "O" || diagV[2] === "O")  {
+            return freeCells[i];
+          }  else if(diagV[0] === "X" || diagV[1] === "X" || diagV[2] === "X") {
+            return freeCells[i];
+          }
         }
       }
     }
@@ -196,11 +208,15 @@ function App() {
   //   }
   //   return sum;
   // }
-  
 
+  let ni = "O";
+  console.log(ni);
   useEffect(() => {
      checkTie(borad);
-     getFreeCells(borad);
+  }, [borad])
+
+  useEffect(()=> {
+    getFreeCells(borad);
   }, [borad])
 
   const checkWinner = (borad) => {
@@ -208,7 +224,7 @@ function App() {
       const [x,y,z] = WIN_CONDITIONS[i];
 
       if (borad[x] && borad[x] === borad[y] && borad[y] === borad[z]) {
-        console.log(borad[x])
+        // console.log(borad[x])
         setGameOver(true);
         setNoWinner(false);
         if (borad[x] === "O") {
@@ -216,7 +232,7 @@ function App() {
           oScore++;
           //spread operator spreads out the values in score and updates oScore
           setScore({...score, oScore})
-        } else {
+        } else  if(borad[x] === "X"){
           let {xScore} = score;
           xScore++;
           setScore({...score, xScore})
@@ -226,12 +242,12 @@ function App() {
     }
   }
   const checkTie = (borad) => {
-
     let draw = borad.includes(null)
     if (noWinner) {
       if(!draw){
         let {tie} = score;
-        tie++;
+        tie += 1;
+        console.log(tie);
         setScore({...score, tie})
         setTimeout(() => {
           resetBorad();
@@ -256,15 +272,15 @@ const makeComputerMove = () => {
     return false;
   }
   let computer = 3,
-      player = 1;
+    player = 1;
   let cell = -1,
       myArr = [],
       corners = [0,2,6,8];
   if (keyMoves >= 3) {
-    cell = getFirstWithTwoInARow(computer);
-    if (cell === false) {
-      cell = getFirstWithTwoInARow(player);
-    }
+    cell = getFirstWithTwoInARow();
+    // if (cell === false) {
+    //   cell = getFirstWithTwoInARow();
+    // }
     if (cell === false) {
       if (borad[4] === 0) {
           cell = 4;
